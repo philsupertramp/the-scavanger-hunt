@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scavenger Hunt Clue</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .clue-header {
+            color: #4a5568;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .quote-container {
+            margin-bottom: 30px;
+        }
+
+        .quote {
+            font-size: 1.5em;
+            line-height: 1.6;
+            color: #2d3748;
+            font-style: italic;
+            margin-bottom: 15px;
+            position: relative;
+            padding: 0 20px;
+        }
+
+        .quote::before,
+        .quote::after {
+            content: '"';
+            font-size: 2em;
+            color: #667eea;
+            position: absolute;
+            font-family: serif;
+        }
+
+        .quote::before {
+            left: -10px;
+            top: -10px;
+        }
+
+        .quote::after {
+            right: -10px;
+            bottom: -20px;
+        }
+
+        .image-container {
+            margin: 30px 0;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .clue-image {
+            width: 100%;
+            height: auto;
+            max-height: 400px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .error-message {
+            color: #e53e3e;
+            font-size: 1.2em;
+            padding: 20px;
+            background: #fed7d7;
+            border-radius: 10px;
+            border: 1px solid #feb2b2;
+        }
+
+        .loading {
+            color: #4a5568;
+            font-size: 1.2em;
+            padding: 20px;
+        }
+
+        .clue-number {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #667eea;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            .quote {
+                font-size: 1.2em;
+                padding: 0 15px;
+            }
+
+            .clue-header {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="clue-number" id="clueNumber" style="display: none;"></div>
+        <div class="clue-header">Scavenger Hunt Clue</div>
+        <div id="content">
+            <div class="loading">Loading your clue...</div>
+        </div>
+    </div>
+
+    <script>
+        // Sample JSON data - replace this with your actual data
+        const clueData = {
+            "1": {
+                "quote": "Look for the place where books find their rest, knowledge sleeps in rows upon rows.",
+                "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&h=300&fit=crop"
+            },
+            "2": {
+                "quote": "Where water flows but never moves, and fish swim behind crystal walls.",
+                "image": "https://images.unsplash.com/photo-1544943910-4c1dc44aab44?w=500&h=300&fit=crop"
+            },
+            "3": {
+                "quote": "The heart of the home where warmth is born, and meals become memories.",
+                "image": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=500&h=300&fit=crop"
+            },
+            "4": {
+                "quote": "Where green things grow in organized rows, and nature meets nurture.",
+                "image": "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=500&h=300&fit=crop"
+            },
+            "5": {
+                "quote": "Congratulations! You've completed the scavenger hunt! 🎉",
+                "image": "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=500&h=300&fit=crop"
+            }
+        };
+
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        function displayClue(clueId) {
+            const contentDiv = document.getElementById('content');
+            const clueNumberDiv = document.getElementById('clueNumber');
+            
+            if (!clueData[clueId]) {
+                contentDiv.innerHTML = `
+                    <div class="error-message">
+                        <strong>Clue not found!</strong><br>
+                        The clue "${clueId}" doesn't exist. Please check your QR code.
+                    </div>
+                `;
+                return;
+            }
+
+            const clue = clueData[clueId];
+            
+            // Show clue number
+            clueNumberDiv.textContent = clueId;
+            clueNumberDiv.style.display = 'block';
+            
+            // Create the content
+            contentDiv.innerHTML = `
+                <div class="quote-container">
+                    <div class="quote">${clue.quote}</div>
+                </div>
+                <div class="image-container">
+                    <img src="${clue.image}" alt="Clue ${clueId}" class="clue-image" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDUwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI1MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjRjdGQUZDIi8+CjxwYXRoIGQ9Ik0yNTAgMTUwQzI1MCA5NC43NzE1IDIwNS4yMjggNTAgMTUwIDUwQzk0Ljc3MTUgNTAgNTAgOTQuNzcxNSA1MCAxNTBDNTAgMjA1LjIyOCA5NC43NzE1IDI1MCAxNTAgMjUwQzIwNS4yMjggMjUwIDI1MCAyMDUuMjI4IDI1MCAxNTBaIiBmaWxsPSIjRTJFOEYwIi8+CjxwYXRoIGQ9Ik0yMDAuNSAxMDAuNUwyMDAuNSAxOTkuNSIgc3Ryb2tlPSIjNjc4MTk3IiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8cGF0aCBkPSJNMTUxIDEwMC41TDE1MSAxOTkuNSIgc3Ryb2tlPSIjNjc4MTk3IiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8cGF0aCBkPSJNMTI1IDEyNS41TDIyNS41IDEyNS41IiBzdHJva2U9IiM2NzgxOTciIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CjxwYXRoIGQ9Ik0xMjUgMTc1LjVMMjI1LjUgMTc1LjUiIHN0cm9rZT0iIzY3ODE5NyIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPHBhdGggZD0iTTMwMCAxMDBMMzAwIDIwMCIgc3Ryb2tlPSIjNjc4MTk3IiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8cGF0aCBkPSJNMzI1IDEyNS41TDM3NS41IDEyNS41IiBzdHJva2U9IiM2NzgxOTciIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CjxwYXRoIGQ9Ik0zMjUgMTc1LjVMMzc1LjUgMTc1LjUiIHN0cm9rZT0iIzY3ODE5NyIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPHBhdGggZD0iTTQwMCAxMDBMNDAwIDIwMCIgc3Ryb2tlPSIjNjc4MTk3IiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4K'">
+                </div>
+            `;
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            const clueId = getQueryParam('clue') || getQueryParam('id') || getQueryParam('c');
+            
+            if (!clueId) {
+                document.getElementById('content').innerHTML = `
+                    <div class="error-message">
+                        <strong>No clue specified!</strong><br>
+                        Please scan a valid QR code to see your clue.
+                    </div>
+                `;
+                return;
+            }
+
+            displayClue(clueId);
+        });
+
+        // Optional: You can also load data from an external JSON file
+        // Uncomment the function below and replace the clueData object above
+        /*
+        async function loadClueData() {
+            try {
+                const response = await fetch('clues.json');
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Error loading clue data:', error);
+                return null;
+            }
+        }
+        */
+    </script>
+</body>
+</html>
