@@ -1,0 +1,1 @@
+# Example scavanger hunt app
